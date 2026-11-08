@@ -3,6 +3,7 @@ use std::io::{self, Read};
 use std::os::fd::AsRawFd;
 
 use rufuse::mount::mount_fuse;
+use rufuse::protocol::InHeader;
 
 fn main() -> io::Result<()> {
     let mut dev = OpenOptions::new()
@@ -22,7 +23,7 @@ fn main() -> io::Result<()> {
     // The first message after mounting is always INIT.
     let n = dev.read(&mut buf)?;
     println!("read {} bytes:", n);
-    println!("{:02x?}", &buf[..n]);
+    println!("{:#?}", InHeader::parse(&buf[..n]));
 
     // Exiting closes dev, which aborts the FUSE connection.
     println!("press Enter to exit");
